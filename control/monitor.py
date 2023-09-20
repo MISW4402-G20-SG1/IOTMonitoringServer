@@ -48,8 +48,13 @@ def analyze_data():
         if item["check_value"] > max_value or item["check_value"] < min_value:
             alert = True
 
-        if alert:
+        if variable == "temperatura" and item["check_value"] < -6:
+            alert = True
+            message = "ALERT {} {} {} (Nuevo récord de temperatura más baja)".format(variable, min_value, max_value)
+        else:
             message = "ALERT {} {} {}".format(variable, min_value, max_value)
+
+        if alert:
             topic = '{}/{}/{}/{}/in'.format(country, state, city, user)
             print(datetime.now(), "Sending alert to {} {}".format(topic, variable))
             client.publish(topic, message)
@@ -57,6 +62,7 @@ def analyze_data():
 
     print(len(aggregation), "dispositivos revisados")
     print(alerts, "alertas enviadas")
+
 
 
 def on_connect(client, userdata, flags, rc):
