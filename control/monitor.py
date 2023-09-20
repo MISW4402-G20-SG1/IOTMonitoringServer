@@ -48,13 +48,9 @@ def analyze_data():
         if item["check_value"] > max_value or item["check_value"] < min_value:
             alert = True
 
-        if variable == "temperatura" and item["check_value"] < -6:
-            alert = True
-            message = "ALERT {} {} {} (Nuevo récord de temperatura más baja)".format(variable, min_value, max_value)
-        else:
+        if alert:
             message = "ALERT {} {} {}".format(variable, min_value, max_value)
 
-        if alert:
             topic = '{}/{}/{}/{}/in'.format(country, state, city, user)
             print(datetime.now(), "Sending alert to {} {}".format(topic, variable))
             client.publish(topic, message)
@@ -63,6 +59,29 @@ def analyze_data():
     print(len(aggregation), "dispositivos revisados")
     print(alerts, "alertas enviadas")
 
+def check_latest_temperature():
+    alertas = 0
+    # Consulta el valor más reciente de la variable temperatura
+    latest_temperature = Data.objects.filter(
+        measurement__name='temperatura'
+    ).latest('base_time')
+
+    min_value = latest_temperature.measurement.min_value or 0
+
+    if latest_temperature.avg_value < min_value:
+        message = "ALERT temperatura {} (Nuevo récord de temperatura más baja)".format(min_value)
+        country = latest_temperature.station.location.country.name
+        state = latest_temperature.station.location.state.name
+        city = latest_temperature.station.location.city.name
+        user = latest_temperature.station.user.username
+        topic = '{}/{}/{}/{}/in'.format(country, state, city, user)
+
+        print(datetime.now(), "Sending alert to temperatura {}".format(topic))
+        client.publish(topic, message)
+    else:
+        print("No se ha encontrado un nuevo récord de temperatura más baja.")
+
+    print(alertas, "alertas enviadas para record")
 
 
 def on_connect(client, userdata, flags, rc):
@@ -108,10 +127,11 @@ def setup_mqtt():
 
 def start_cron():
     '''
-    Inicia el cron que se encarga de ejecutar la función analyze_data cada 5 minutos.
+    Inicia el cron que se encarga de ejecutar la función analyze_data y check_latest_temperature cada 5 minutos.
     '''
     print("Iniciando cron...")
     schedule.every(5).minutes.do(analyze_data)
+    schedule.every(5).minutes.do(check_latest_temperature)
     print("Servicio de control iniciado")
     while 1:
         schedule.run_pending()
