@@ -66,7 +66,7 @@ def check_latest_temperature():
         measurement__name='temperatura'
     ).latest('base_time')
 
-    min_value = latest_temperature.measurement.min_value or 0
+    min_value = -6
 
     if latest_temperature.avg_value < min_value:
         message = "ALERT temperatura {} (Nuevo récord de temperatura más baja)".format(min_value)
