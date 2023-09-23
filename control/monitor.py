@@ -131,7 +131,7 @@ def start_cron():
     '''
     print("Iniciando cron...")
     schedule.every(5).minutes.do(analyze_data)
-    schedule.every(5).minutes.do(check_latest_temperature)
+    schedule.every(1).minutes.do(check_latest_temperature)
     print("Servicio de control iniciado")
     while 1:
         schedule.run_pending()
