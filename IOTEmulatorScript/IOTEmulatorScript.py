@@ -71,7 +71,7 @@ def process_message(msg: str):
     '''
     print("Procesando mensaje: " + msg)
 
-    if ("ALERT" in msg and "record" in msg):
+    if ("ALERT" in msg and "récord" in msg):
         print("############################################################")
         print("############################################################")
         print("############################################################")
@@ -135,7 +135,7 @@ def on_message(client, userdata, msg):
     '''
     print("Mensaje recibido")
     data = msg.payload.decode("utf-8")
-    print(msg.topic + ": " + str(data))
+    print(msg.topic)
     process_message(data)
 
 

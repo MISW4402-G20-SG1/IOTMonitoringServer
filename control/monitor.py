@@ -69,7 +69,7 @@ def check_latest_temperature():
     min_value = -6
 
     if latest_temperature.avg_value < min_value:
-        message = "ALERT temperatura {} (Nuevo récord de temperatura más baja)".format(min_value)
+        message = "ALERT temperatura {} (Nuevo récord de temperatura más baja)".format(latest_temperature.avg_value)
         country = latest_temperature.station.location.country.name
         state = latest_temperature.station.location.state.name
         city = latest_temperature.station.location.city.name
@@ -78,6 +78,7 @@ def check_latest_temperature():
 
         print(datetime.now(), "Sending alert to temperatura {}".format(topic))
         client.publish(topic, message)
+        alertas += 1
     else:
         print("No se ha encontrado un nuevo récord de temperatura más baja.")
 
