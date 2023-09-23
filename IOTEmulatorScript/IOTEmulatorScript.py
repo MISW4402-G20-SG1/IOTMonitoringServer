@@ -48,7 +48,7 @@ MQTT_SUB_TOPIC = BASE_TOPIC + "/in"
 '''
 Intervalo de medición en segundos
 '''
-MEASURE_INTERVAL = 30
+MEASURE_INTERVAL = 10
 
 '''
 Valor medio de la temperatura en grados Celsius
